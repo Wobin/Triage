@@ -31,6 +31,7 @@ mod.clean_outline = function()
     if not outline_system then return end
     for player, _ in pairs(mod.outlined) do                           
         outline_system:remove_outline(player, "triage")
+        outline_system:remove_outline(player, "triage_health")
     end
 end
 
@@ -42,7 +43,16 @@ mod:hook_require("scripts/settings/outline/outline_settings", function(settings)
             "player_outline_knocked_down",
             "player_outline_knocked_down_reversed_depth"
         },
-        visibility_check = function(unit) return targets[unit] end
+        visibility_check = function(unit) return targets[unit] == "wound" end
+    }
+    settings.PlayerUnitOutlineExtension.triage_health = {
+        priority = 1,
+        color = {1,0,0},
+        material_layers = {
+            "player_outline_knocked_down",
+            "player_outline_knocked_down_reversed_depth"
+        },
+        visibility_check = function(unit) return targets[unit] == "health" end
     }
 end)
 
@@ -64,10 +74,14 @@ mod.check_health = function()
             local health_sys = HasExtension(player.player_unit, "health_system")
             local corrupted = health_sys:permanent_damage_taken_percent() 
             local max_wounds = health_sys:max_wounds()           
-            if corrupted > 0 and  corrupted >= (1 - 1 / max_wounds) then                                  
-                targets[player.player_unit] = true                
-            else
-                targets[player.player_unit] = nil
+            local health_percent = health_sys:current_health_percent()           
+            
+            targets[player.player_unit] = nil
+            if  ( health_percent < (mod:get("health_threshold")/100)) then
+                targets[player.player_unit] = "health"                
+            end
+            if (corrupted > 0 and  corrupted >= (1 - 1 / max_wounds)) then                                  
+                targets[player.player_unit] = "wound"                               
             end                    
         end    
     end
@@ -81,6 +95,7 @@ mod:hook_safe(CLASS.ActionHandler, "start_action", function(self, _, _, action_n
             mod.wielding = true
 	        for _, player in pairs(players) do           
 			    outline_system:add_outline(player.player_unit, "triage")
+                outline_system:add_outline(player.player_unit, "triage_health")
                 mod.outlined[player.player_unit] = true
             end
         else
