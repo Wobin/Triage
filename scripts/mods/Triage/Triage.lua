@@ -1,9 +1,9 @@
 --[[
 Title: Triage
 Author: Wobin
-Date: 23/08/2025
+Date: 02/10/2025
 Repository: https://github.com/Wobin/Triage
-Version: 1.0
+Version: 1.1
 --]]
 local mod = get_mod("Triage")
 
@@ -17,22 +17,24 @@ local health_syringe = "content/items/pocketable/syringe_corruption_pocketable"
 
 mod.targets = {}
 mod.outlined = {}
+
 local targets = mod.targets
+local outlined = mod.outlined
 
 mod.on_game_state_changed = function()
-    mod.targets = {}
-    mod:clean_outline()
-    mod.outlined = {}
+    mod:clean_outline()    
     mod.wielding = nil
 end
 
 mod.clean_outline = function()
     local outline_system = Managers.state and Managers.state.extension and Managers.state.extension:system("outline_system")
     if not outline_system then return end
-    for player, _ in pairs(mod.outlined) do                           
+    for player, _ in pairs(outlined) do                           
         outline_system:remove_outline(player, "triage")
         outline_system:remove_outline(player, "triage_health")
     end
+    targets = {}
+    outlined = {}
 end
 
 mod:hook_require("scripts/settings/outline/outline_settings", function(settings)    
@@ -58,7 +60,12 @@ end)
 
 local throttle = 0
 mod.update = function(dt)
-    if not mod.wielding then return end
+    if not mod.wielding then 
+        if #outlined > 0 then 
+            mod:clean_outline()
+        end
+        return             
+    end
     if dt + throttle < 1 then 
         throttle = throttle + dt
         return             
@@ -72,10 +79,11 @@ mod.check_health = function()
     for _, player in pairs(players) do
         if player then
             local health_sys = HasExtension(player.player_unit, "health_system")
-            local corrupted = health_sys:permanent_damage_taken_percent() 
-            local max_wounds = health_sys:max_wounds()           
-            local health_percent = health_sys:current_health_percent()           
+            local corrupted = health_sys and health_sys:permanent_damage_taken_percent() 
+            local max_wounds = health_sys and health_sys:max_wounds()           
+            local health_percent = health_sys and health_sys:current_health_percent()           
             
+            if not health_sys then return end
             targets[player.player_unit] = nil
             if  ( health_percent < (mod:get("health_threshold")/100)) then
                 targets[player.player_unit] = "health"                
@@ -96,11 +104,10 @@ mod:hook_safe(CLASS.ActionHandler, "start_action", function(self, _, _, action_n
 	        for _, player in pairs(players) do           
 			    outline_system:add_outline(player.player_unit, "triage")
                 outline_system:add_outline(player.player_unit, "triage_health")
-                mod.outlined[player.player_unit] = true
+                outlined[player.player_unit] = true
             end
         else
-            mod:clean_outline()
-            mod.outlined = {}
+            mod:clean_outline()            
             mod.wielding = false
         end
 end)
