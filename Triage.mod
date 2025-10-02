@@ -8,6 +8,6 @@ return {
 			mod_localization = "Triage/scripts/mods/Triage/Triage_localization",
 		})
 	end,	
-  	version = "1.0.0",
+  	version = "1.1",
 	packages = {},
 }
