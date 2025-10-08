@@ -61,7 +61,7 @@ end)
 local throttle = 0
 mod.update = function(dt)
     if not mod.wielding then 
-        if #outlined > 0 then 
+        if next(outlined, nil) then 
             mod:clean_outline()
         end
         return             
