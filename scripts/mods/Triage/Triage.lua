@@ -1,9 +1,9 @@
 --[[
 Title: Triage
 Author: Wobin
-Date: 02/10/2025
+Date: 08/10/2025
 Repository: https://github.com/Wobin/Triage
-Version: 1.1
+Version: 1.2
 --]]
 local mod = get_mod("Triage")
 
@@ -106,8 +106,7 @@ mod:hook_safe(CLASS.ActionHandler, "start_action", function(self, _, _, action_n
                 outline_system:add_outline(player.player_unit, "triage_health")
                 outlined[player.player_unit] = true
             end
-        else
-            mod:clean_outline()            
+        else            
             mod.wielding = false
         end
 end)
