@@ -7,7 +7,6 @@ return {
 			mod_data         = "Triage/scripts/mods/Triage/Triage_data",
 			mod_localization = "Triage/scripts/mods/Triage/Triage_localization",
 		})
-	end,	
-  	version = "1.2",
+	end,
 	packages = {},
 }

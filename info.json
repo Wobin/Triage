@@ -1,0 +1,17 @@
+{
+	"name": "Triage",
+	"description": "Will highlight squad members who have one wound left due to corruption while wielding a med stimm",
+	"version": "1.2.1",
+	"author": "Wobin",
+	"homepage": "https://www.nexusmods.com/warhammer40kdarktide/mods/591",
+	"source": "https://github.com/Wobin/Triage",
+	"funding": {
+		"kofi": "https://ko-fi.com/wobin_dwonderdog"
+	},
+	"nexusId": "591",
+	"order": {
+		"require": [],
+		"this_after": [],
+		"this_before": []
+	}
+}

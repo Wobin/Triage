@@ -1,11 +1,11 @@
 --[[
 Title: Triage
 Author: Wobin
-Date: 08/10/2025
+Date: 20/08/2026
 Repository: https://github.com/Wobin/Triage
-Version: 1.2
 --]]
 local mod = get_mod("Triage")
+mod.version = mod.get_metadata and mod:get_metadata("version") or "unknown"
 
 local CLASS = CLASS
 local Managers = Managers
@@ -101,10 +101,12 @@ mod:hook_safe(CLASS.ActionHandler, "start_action", function(self, _, _, action_n
         local players = PlayerManager:players()    
         if (action_name == "action_wield" or action_name == "action_aim") and self._inventory_component[self._inventory_component.wielded_slot] == health_syringe then
             mod.wielding = true
-	        for _, player in pairs(players) do           
-			    outline_system:add_outline(player.player_unit, "triage")
-                outline_system:add_outline(player.player_unit, "triage_health")
-                outlined[player.player_unit] = true
+	        for _, player in pairs(players) do        
+                if player.player_unit then   
+			        outline_system:add_outline(player.player_unit, "triage")
+                    outline_system:add_outline(player.player_unit, "triage_health")
+                    outlined[player.player_unit] = true
+                end
             end
         else            
             mod.wielding = false
